@@ -1,0 +1,18 @@
+# Wireless adapter #1
+# Armbian ships with network-manager installed by default. To save you time
+# and hassles consider using 'sudo nmtui' instead of configuring Wi-Fi settings
+# manually. The below lines are only meant as an example how configuration could
+# be done in an anachronistic way:
+#
+allow-hotplug wlan0
+#iface wlan0 inet dhcp
+iface wlan0 inet static
+address 192.168.88.1
+netmask 255.255.255.0
+#gateway 192.168.0.1
+dns-nameservers 8.8.8.8 8.8.4.4
+#   wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+# Disable power saving on compatible chipsets (prevents SSH/connection dropouts over WiFi)
+#wireless-mode Monitor
+wireless-power off
+hostapd /etc/hostapd.conf

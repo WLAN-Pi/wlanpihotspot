@@ -1,0 +1,131 @@
+#! /bin/bash
+#
+# hotspot_switcher       script to switch hotspot on/off
+#
+# Written by Nigel Bowden <wifinigel@gmail.com>.
+#
+# History:
+#
+# v0.01 - 25th July 2019 - Initial version based on Francois Verges' article
+#
+
+set -e
+
+NAME=hotspot_switcher
+DESC="Script to switch hotspot on/off"
+VERSION=0.01
+STATUS_FILE="/etc/wlanpihotspot/hotspot.on"
+
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
+
+###############################################################################
+#
+# Activate hotspot:
+#
+# 1. Backup various existing files to allow restoration when hotspot
+#    deactivated
+# 2. Remove a number of existing files that need to be replaced
+# 3. Create links from deleted file locations to hotspot config files
+# 4. Create status file to indicate hotspot is active
+# 5. Reboot the wlanpi to ensure clean activation
+#
+###############################################################################
+hotspot_on () {
+  echo "Enabling hotspot..."
+  #Backup existing config files
+  cp /etc/default/isc-dhcp-server /etc/default/isc-dhcp-server.hspt
+  cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.hspt
+  cp /etc/network/interfaces /etc/network/interfaces.hspt
+  cp /etc/hostapd.conf /etc/hostapd.conf.hspt
+  # Remove existing config files
+  rm /etc/default/isc-dhcp-server
+  rm /etc/dhcp/dhcpd.conf
+  rm /etc/network/interfaces
+  rm /etc/hostapd.conf
+  # Link to hotspot config files
+  ln -s /etc/wlanpihotspot/default/isc-dhcp-server /etc/default/isc-dhcp-server 
+  ln -s /etc/wlanpihotspot/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf
+  ln -s /etc/wlanpihotspot/network/interfaces /etc/network/interfaces
+  ln -s /etc/wlanpihotspot/conf/hostapd.conf /etc/hostapd.conf
+  touch $STATUS_FILE
+  echo "WLANPi will now reboot"
+  sleep 1
+  reboot
+}
+
+###############################################################################
+#
+# Deactivate hotspot:
+#
+# 1. Remove links created during activation
+# 2. Restore config files backed up during activation
+# 3. Remove firewall rules added during activation
+# 4. Remove status file to indicate hotspot no longer active
+# 5. Reboot wlanpi to provide clean restoration of services
+#
+###############################################################################
+hotspot_off () {
+  echo "Disabling hotspot..."
+  # Remove links to config files
+  unlink /etc/default/isc-dhcp-server
+  unlink /etc/dhcp/dhcpd.conf
+  unlink /etc/network/interfaces
+  unlink /etc/hostapd.conf
+  # Restore original config files
+  cp /etc/default/isc-dhcp-server.hspt /etc/default/isc-dhcp-server
+  cp /etc/dhcp/dhcpd.conf.hspt /etc/dhcp/dhcpd.conf
+  cp /etc/network/interfaces.hspt /etc/network/interfaces
+  cp /etc/hostapd.conf.hspt /etc/hostapd.conf
+  echo "WLANPi will now reboot"
+  if [ -e "$STATUS_FILE" ]; then
+    rm $STATUS_FILE
+  fi
+  sleep 1
+  reboot
+}
+
+status () {
+  if [ -e "$STATUS_FILE" ]; then
+    echo "hotspot is currently enabled"
+    exit 0
+  else
+    echo "hotspot is currently disabled"
+    exit 0
+  fi
+
+}
+
+version () {
+    N=/etc/wlanpihotspot/$NAME
+        echo "Version: $N $VERSION" >&2
+        exit 1
+
+}
+
+case "$1" in
+  on)
+        hotspot_on
+        ;;
+  off)
+        hotspot_off
+        ;;
+  status)
+        status
+        ;;
+  install)
+        install
+        ;;
+  version)
+        version;;
+  *)
+        N=/etc/wlanpihotspot/$NAME
+        echo "Usage: $N {on|off|status|version}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0
+
