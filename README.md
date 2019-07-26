@@ -16,12 +16,11 @@ To provide a test hotspot using your WLANPi, you will need:
 
 To install the required files, obtain the gzipped archive file in the "bundle" directory of the project github repo (https://github.com/WLAN-Pi/wlanpi-hotspot)
 
-Copy the wifi-hotspot archive file to the WLANPi into the /etc directory of the WLANPI. Extract the files from the archive using
-the command:
+Copy the wifi-hotspot archive file into the /etc directory of the WLANPI. Extract the files from the archive using the commands:
 
 ```
  sudo cd /etc
- sudo tar xvfz wlanpihostpot-v0.02.tar.gz
+ sudo tar xvfz wlanpihotspot-v0.02.tar.gz
 ```
  
 Installation is now complete. If you are using the native WLANPi front panel menu system to flip modes and activate the hotspot(which is available from image ver v1.7 & highly recommended!), you do not need to do anything else.
@@ -33,10 +32,10 @@ It is very likely that you will not want to use this utility with the default sh
 To change from the default settings, ensure that the WLANPi is operating in standard "classic"mode. Then, edit the file: /etc/wlanpihostpot/conf/hostapd.conf. This can be done by opening an SSH session to the WLANPi and using the 'nano' editor:
 
 ```
- sudo nano /etc/wlanpihostpot/conf/hostapd.conf
+ sudo nano /etc/wlanpihotspot/conf/hostapd.conf
 ```
 
-There are numerous fields you can configure to change the behavior of the hotspot access point feature, but here are some of the more likely fields you'll want to look at: Change the following fields to your desired values (note that lines beginning with a # character are comments and do not affect operation):
+There are numerous fields you can configure to change the behavior of the hotspot access point feature, but here are some of the more likely fields you'll want to look at and perhaps update (note that lines beginning with a # character are comments and do not affect operation):
 
 ```
     # WLAN SSID
@@ -56,15 +55,21 @@ There are numerous fields you can configure to change the behavior of the hotspo
     country_code=CA
 ```
 
-Once you have made your changes, hit Ctrl-X to exit and hit "Y" to save the changes when prompted.
+Once you have made your changes, hit Ctrl-X in the nano editor to exit and hit "Y" to save the changes when prompted.
 
 Next, flip the WLANPi back in to "Hotspot" mode as described in previous sections. After the accompanying reboot, the WLANPi should operate using the newly configured parameters.
+
+# Using Hotspot Mode
+
+Following the WLANPi reboot, by default, an SSID of "wlanpi_hotspot" will be available on channel 36. You can join the SSID with a wireless client (e.g. your laptop) using the default shared key: "wifipros".
+
+Once you have joined the SSID, an IP address is assigned to your client device via DHCP and you will have access to the WLANPi. You will be able to access features such as the speedtest using a browser pointed at : http://192.168.88.1/
 
 # Background
 
 (It is possible to flip in to Hotspot mode using the Linux CLI, but it is strongly recommended to use the native WLANPi front panel navigation menu)
 
-As there are quite a few networking changes we need to make for Wi-Fi Console to operate correctly, we need to flip the WLANPi in to a completely new mode of operation that uses a different network configuration. The 'hotspot_switcher' script is used to switch between the usual "classic" mode of operation and the "Hotspot" mode. 
+As there are quite a few networking changes we need to make for the Hotspot to operate correctly, we need to flip the WLANPi in to a completely new mode of operation that uses a different network configuration. The 'hotspot_switcher' script is used to switch between the usual "classic" mode of operation and the "Hotspot" mode. 
 
 When moving to the "Hotspot" mode, various configuration files are changed on the WLANPi, with the original networking files being preserved to allow restoration to the original ("classic" mode) configuration. 
 
@@ -82,15 +87,8 @@ To flip the WLANPi in to "Hotspot" mode, SSH to the WLANPi and execute the follo
 
 At this point, the WLANPi will reboot so that the new networking configuration will take effect. 
 
-# Using Hotspot Mode
-
-Following the WLANPi reboot, by default, an SSID of "wlanpi_hotspot" will be available on channel 36. You can join the SSID with a wireless client (e.g. your laptop) using the default shared key: "wifipros".
-
-Once you have joined the SSID, an IP address is assigned to yuor client device via DHCP and you will have access to the WLANPi. You will be able to access features such as the speedtest using a browser pointed at : http://192.168.88.1/
 
 ## Exiting Hotspot Mode (via CLI)
-
-To switch out of hotspot mode, SSH to it and run the command: sudo /etc/wlanpihotspot/hotspot_switcher off
 
 To switch out of "Hotspot" mode, SSH to the WLANPi using network address 192.168.88.1 and run the command: 
 
