@@ -1,0 +1,35 @@
+
+INSTALL.txt
+==========
+
+To provide a test hotspot using the WLANPi, you will need:
+
+ - a supported wireless adapter plugged in to one USB port of the WLANPi (e.g. CF-912ac)
+ - a WLANPi unit
+
+To install the required files, obtain the gzipped archive file in the "bundle" directory of the project github repo (https://github.com/WLAN-Pi/wlanpi-hotspot)
+
+Copy the wifi-hotspot gzipped archive to the WLANPi into the /etc directory of the WLANPI. Extract the files from the archive using
+the command:
+
+ sudo tar xvfz wlanpihostpot-v0.02.tar.gz
+ 
+Installation is now complete. If you are using the native WLANPi front panel menu system to flip modes (which is available from image ver v1.7 & highly recommended!) and activate the hotspot, you do not need to do anything else.
+
+To flip in to the hotspot mode via the CLI, change to the newly created directory /etc/wlanpihotspot:
+
+ cd /etc/wlanpihotspot
+
+Flip the WLANPi in to hotspot mode:
+
+ sudo ./hotspot_switcher on
+
+At this point, the WLANPi will reboot. Following the reboot, an SSID of wlanpi_hotspot will be available on channel 36. Join the SSID and use the PSK: wifipros.
+
+Once you have joined the SSID, you will have access to the WLANPi and can access features such as the speedtest using a browser at : http://192.168.88.1/
+
+To switch out of hotspot mode, SSH to it  and run the command: sudo /etc/wlanpihotspot/hotspot_switcher off
+
+*** Note: The front panel menu system available from image version v1.7 is a much better option for flipping WLANPi modes ***
+ 
+

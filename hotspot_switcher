@@ -7,13 +7,13 @@
 # History:
 #
 # v0.01 - 25th July 2019 - Initial version based on Francois Verges' article
-#
+# v0.02 - 26th July 2019 - Added file checks before file copy/del operations
 
 set -e
 
 NAME=hotspot_switcher
 DESC="Script to switch hotspot on/off"
-VERSION=0.01
+VERSION=0.02
 STATUS_FILE="/etc/wlanpihotspot/hotspot.on"
 
 if [[ $EUID -ne 0 ]]; then
@@ -39,12 +39,18 @@ hotspot_on () {
   cp /etc/default/isc-dhcp-server /etc/default/isc-dhcp-server.hspt
   cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.hspt
   cp /etc/network/interfaces /etc/network/interfaces.hspt
-  cp /etc/hostapd.conf /etc/hostapd.conf.hspt
+  # This file may or may not exist
+  if [ -e /etc/hostapd.conf ]; then
+    cp /etc/hostapd.conf /etc/hostapd.conf.hspt
+  fi
   # Remove existing config files
   rm /etc/default/isc-dhcp-server
   rm /etc/dhcp/dhcpd.conf
   rm /etc/network/interfaces
-  rm /etc/hostapd.conf
+  # This file may or may not exist
+  if [ -e /etc/hostapd.conf ]; then
+    rm /etc/hostapd.conf
+  fi
   # Link to hotspot config files
   ln -s /etc/wlanpihotspot/default/isc-dhcp-server /etc/default/isc-dhcp-server 
   ln -s /etc/wlanpihotspot/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf
@@ -78,7 +84,10 @@ hotspot_off () {
   cp /etc/default/isc-dhcp-server.hspt /etc/default/isc-dhcp-server
   cp /etc/dhcp/dhcpd.conf.hspt /etc/dhcp/dhcpd.conf
   cp /etc/network/interfaces.hspt /etc/network/interfaces
-  cp /etc/hostapd.conf.hspt /etc/hostapd.conf
+  # This file may or may not exist
+  if [ -e /etc/hostapd.conf.hspt ]; then
+    cp /etc/hostapd.conf.hspt /etc/hostapd.conf
+  fi
   echo "WLANPi will now reboot"
   if [ -e "$STATUS_FILE" ]; then
     rm $STATUS_FILE
