@@ -14,9 +14,10 @@ To provide a test hotspot using your WLANPi, you will need:
 
 ## Installation
 
-To install (or upgrade) the required files, connect yoru WLANPi to a network so that it has Internet access. Then SSH to your WLANPi and execute the following commands on the CLI of the WLANP (probably best to copy & paste them from the list below):
+To install (or upgrade) the required files, connect your WLANPi to a network so that it has Internet access. Then SSH to your WLANPi and execute the following commands on the CLI of the WLANP (make sure you copy & paste each command individually, as you will be prompted to enter a password at some point - use your wlanpi user password):
 
 ```
+# Copy & paste these one at a time - you will likely need to enter your password at least once
 cd /etc
 sudo rm -r ./wlanpihotspot
 sudo git clone https://github.com/WLAN-Pi/wlanpihotspot.git
