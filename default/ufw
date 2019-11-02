@@ -42,3 +42,4 @@ IPT_SYSCTL=/etc/ufw/sysctl.conf
 # nf_conntrack_ftp, nf_nat_ftp: active FTP support
 # nf_conntrack_tftp, nf_nat_tftp: TFTP support (server side)
 IPT_MODULES="nf_conntrack_ftp nf_nat_ftp nf_conntrack_netbios_ns"
+

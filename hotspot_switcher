@@ -8,7 +8,6 @@
 #
 # v0.01 - 25th July 2019 - Initial version based on Francois Verges' article
 # v0.02 - 26th July 2019 - Added file checks before file copy/del operations
-# v0.03 - 21st October 2019 - Added update to bridge interfaces
 
 set -e
 
