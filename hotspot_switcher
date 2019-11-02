@@ -8,12 +8,13 @@
 #
 # v0.01 - 25th July 2019 - Initial version based on Francois Verges' article
 # v0.02 - 26th July 2019 - Added file checks before file copy/del operations
+# v0.03 - 21st October 2019 - Added update to bridge interfaces
 
 set -e
 
 NAME=hotspot_switcher
 DESC="Script to switch hotspot on/off"
-VERSION=0.02
+VERSION=0.03
 STATUS_FILE="/etc/wlanpihotspot/hotspot.on"
 
 if [[ $EUID -ne 0 ]]; then
@@ -39,6 +40,9 @@ hotspot_on () {
   cp /etc/default/isc-dhcp-server /etc/default/isc-dhcp-server.hspt
   cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.hspt
   cp /etc/network/interfaces /etc/network/interfaces.hspt
+  cp /etc/sysctl.conf /etc/sysctl.conf.hspt
+  cp /etc/default/ufw /etc/default/ufw.hspt
+  cp /etc/ufw/before.rules /etc/ufw/before.rules.hspt
   # This file may or may not exist
   if [ -e /etc/hostapd.conf ]; then
     cp /etc/hostapd.conf /etc/hostapd.conf.hspt
@@ -47,6 +51,9 @@ hotspot_on () {
   rm /etc/default/isc-dhcp-server
   rm /etc/dhcp/dhcpd.conf
   rm /etc/network/interfaces
+  rm /etc/sysctl.conf
+  rm /etc/default/ufw
+  rm /etc/ufw/before.rules
   # This file may or may not exist
   if [ -e /etc/hostapd.conf ]; then
     rm /etc/hostapd.conf
@@ -56,6 +63,9 @@ hotspot_on () {
   ln -s /etc/wlanpihotspot/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf
   ln -s /etc/wlanpihotspot/network/interfaces /etc/network/interfaces
   ln -s /etc/wlanpihotspot/conf/hostapd.conf /etc/hostapd.conf
+  ln -s /etc/wlanpihotspot/sysctl/sysctl.conf /etc/sysctl.conf
+  ln -s /etc/wlanpihotspot/default/ufw /etc/default/ufw
+  ln -s /etc/wlanpihotspot/ufw/before.rules /etc/ufw/before.rules
   touch $STATUS_FILE
   echo "WLANPi will now reboot"
   sleep 1
@@ -80,10 +90,16 @@ hotspot_off () {
   unlink /etc/dhcp/dhcpd.conf
   unlink /etc/network/interfaces
   unlink /etc/hostapd.conf
+  unlink /etc/sysctl.conf
+  unlink /etc/default/ufw
+  unlink /etc/ufw/before.rules
   # Restore original config files
   cp /etc/default/isc-dhcp-server.hspt /etc/default/isc-dhcp-server
   cp /etc/dhcp/dhcpd.conf.hspt /etc/dhcp/dhcpd.conf
   cp /etc/network/interfaces.hspt /etc/network/interfaces
+  cp /etc/sysctl.conf.hspt /etc/sysctl.conf
+  cp /etc/default/ufw.hspt /etc/default/ufw
+  cp /etc/ufw/before.rules.hspt /etc/ufw/before.rules
   # This file may or may not exist
   if [ -e /etc/hostapd.conf.hspt ]; then
     cp /etc/hostapd.conf.hspt /etc/hostapd.conf

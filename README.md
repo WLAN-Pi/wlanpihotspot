@@ -20,7 +20,7 @@ Copy the wifi-hotspot archive file into the /etc directory of the WLANPI. Extrac
 
 ```
  sudo cd /etc
- sudo tar xvfz wlanpihotspot-v0.02.tar.gz
+ sudo tar xvfz wlanpihotspot-v0.03.tar.gz
 ```
  
 Installation is now complete. If you are using the native WLANPi front panel menu system to flip modes and activate the hotspot(which is available from image ver v1.7 & highly recommended!), you do not need to do anything else.
