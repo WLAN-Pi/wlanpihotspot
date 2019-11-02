@@ -3,27 +3,27 @@
 
 This is a package created using the information in François Vergès blog article : [WLAN Pi - Setup a Wi-Fi Hotspot](https://www.semfionetworks.com/blog/wlan-pi-setup-a-wi-fi-hotspot)
 
-This package is accessed using the menu system detailed in the WLANPi project : [wlanpi-nanohat-oled](https://github.com/WLAN-Pi/wlanpi-nanohat-oled)
+This package is accessed using the menu system detailed in the WLANPi project : [Bakebit](https://github.com/WLAN-Pi/BakeBit)
 
 ## Requirements
 
 To provide a test hotspot using your WLANPi, you will need:
 
  - a supported wireless adapter plugged in to one USB port of the WLANPi (e.g. CF-912AC, CF-915AC)
- - WLANPi distribution v1.7 or later installed on a WLANPi (https://github.com/WLAN-Pi/wlanpi/releases), which includes [wlanpi-nanohat-oled.py](https://github.com/WLAN-Pi/wlanpi-nanohat-oled) v0.17 or later
+ - WLANPi distribution v1.7 or later installed on a WLANPi (https://github.com/WLAN-Pi/wlanpi/releases), which includes [Bakebit](https://github.com/WLAN-Pi/BakeBit) v0.17 or later
 
 ## Installation
 
-To install the required files, obtain the gzipped archive file in the "bundle" directory of the project github repo (https://github.com/WLAN-Pi/wlanpi-hotspot)
-
-Copy the wifi-hotspot archive file into the /etc directory of the WLANPI. Extract the files from the archive using the commands:
+To install (or upgrade) the required files, connect yoru WLANPi to a network so that it has Internet access. Then SSH to your WLANPi and execute the following commands on the CLI of the WLANP (probably best to copy & paste them from the list below):
 
 ```
- sudo cd /etc
- sudo tar xvfz wlanpihotspot-v0.02.tar.gz
+cd /etc
+sudo rm -r ./wlanpihotspot
+sudo git clone https://github.com/WLAN-Pi/wlanpihotspot.git
+sudo sh /etc/wlanpihotspot/set_file_permissions.sh
 ```
  
-Installation is now complete. If you are using the native WLANPi front panel menu system to flip modes and activate the hotspot(which is available from image ver v1.7 & highly recommended!), you do not need to do anything else.
+Installation should now be now complete. If you are using the native WLANPi front panel menu system to flip modes and activate the hotspot(which is available from image ver v1.7 & highly recommended!), you do not need to do anything else.
 
 ## Configurations Options
 
