@@ -1,0 +1,4 @@
+V0.05
+-----
+
+Added detection of AP mode to switcher utility to prevent hotspot being selected if wireless NIC chipset does not support AP mode. 

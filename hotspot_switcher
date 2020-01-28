@@ -34,6 +34,15 @@ fi
 #
 ###############################################################################
 hotspot_on () {
+
+    # check if the WLAN NIC supports AP mode before switching
+  # iw list | awk '/Supported interface modes/, /Band/' | grep '\* AP'
+   AP_SUPPORT=`iw list | awk '/Supported interface modes/, /Band/' | grep '\* AP'` || true
+   if  [ -z "$AP_SUPPORT" ]; then
+     echo "Failed - AP Mode not supported by adapter."
+     exit 1
+  fi
+  
   echo "Enabling hotspot..."
   #Backup existing config files
   cp /etc/default/isc-dhcp-server /etc/default/isc-dhcp-server.hspt
