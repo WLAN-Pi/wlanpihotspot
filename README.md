@@ -12,24 +12,6 @@ To provide a test hotspot using your WLANPi, you will need:
  - a supported wireless adapter plugged in to one USB port of the WLANPi (e.g. CF-912AC, CF-915AC)
  - WLANPi distribution v1.7 or later installed on a WLANPi (https://github.com/WLAN-Pi/wlanpi/releases), which includes [Bakebit](https://github.com/WLAN-Pi/BakeBit) v0.17 or later
 
-## Installation
-
-The install/upgrade process is relatively easy. We simply connect the WLANPi to the Internet and pull the latest files from our GitHub repository. Note that you will lose any customizations you previously applied (e.g. SSID name changes etc.), so back up any config files you need before doing this.
-
-To install (or upgrade) the required files, connect your WLANPi to a network so that it has Internet access. Then SSH to your WLANPi and execute the following commands on the CLI of the WLANPi (make sure you copy & paste each command individually, as you will be prompted to enter a password at some point - use your wlanpi user password):
-
-```
-# Copy & paste these one at a time - you will likely need to enter your password at least once
-# You will lose any customizations you previously applied, so back up any config files
-# you need before doing this.
-cd /etc
-sudo rm -r ./wlanpihotspot
-sudo git clone https://github.com/WLAN-Pi/wlanpihotspot.git
-sudo sh /etc/wlanpihotspot/set_file_permissions.sh
-```
- 
-Installation should now be now complete. If you are using the native WLANPi front panel menu system to flip modes and activate the hotspot(which is available from image ver v1.7 & highly recommended!).
-
 ## Configurations Options
 
 It is very likely that you will not want to use this utility with the default shared key, channel and SSID. 
@@ -104,5 +86,24 @@ To switch out of "Hotspot" mode, SSH to the WLANPi using network address 192.168
 When this command is executed, the original ("classic" mode) networking configuration files will be restored and the WLANPi will reboot. After the reboot, the WLANPi will operate as it did before the switch to "Hotspot" mode.
 
 *** Note: The front panel menu system available from image version v1.7 is a much better option for flipping WLANPi modes as it carried far less risk of causing operational issues ***
+
+
+## Installation (only required by image developers, code is included with WLAN Pi image for regular users)
+
+The install/upgrade process is relatively easy. We simply connect the WLANPi to the Internet and pull the latest files from our GitHub repository. Note that you will lose any customizations you previously applied (e.g. SSID name changes etc.), so back up any config files you need before doing this.
+
+To install (or upgrade) the required files, connect your WLANPi to a network so that it has Internet access. Then SSH to your WLANPi and execute the following commands on the CLI of the WLANPi (make sure you copy & paste each command individually, as you will be prompted to enter a password at some point - use your wlanpi user password):
+
+```
+# Copy & paste these one at a time - you will likely need to enter your password at least once
+# You will lose any customizations you previously applied, so back up any config files
+# you need before doing this.
+cd /etc
+sudo rm -r ./wlanpihotspot
+sudo git clone https://github.com/WLAN-Pi/wlanpihotspot.git
+sudo sh /etc/wlanpihotspot/set_file_permissions.sh
+```
+ 
+Installation should now be now complete. If you are using the native WLANPi front panel menu system to flip modes and activate the hotspot(which is available from image ver v1.7 & highly recommended!).
 
 
