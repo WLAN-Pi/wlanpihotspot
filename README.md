@@ -1,22 +1,29 @@
 # WLANPi Hotspot
-*Turn your WLANPi in to test AP*
+*Turn your WLANPi in to test a AP*
 
-This is a package created using the information in François Vergès blog article : [WLAN Pi - Setup a Wi-Fi Hotspot](https://www.semfionetworks.com/blog/wlan-pi-setup-a-wi-fi-hotspot)
+The WLAN Pi hotspot mode has been created to provide a quick and dirty wireless AP for tasks such as wall attenuation measurements. It will also allow a temporary wireless connection when you'd like to hook up to a switch ethernet port and extend the network connection out to a wireless client. Finally, it can be used to provide wireless access to the WLAN Pi itself if an OTG or Ethernet connection is not available.
 
-This package is accessed using the menu system detailed in the WLANPi project : [Bakebit](https://github.com/WLAN-Pi/BakeBit)
+If you have WLAN Pi image v1.7 or later, the package is already installed, available and ready to go! Read the notes below to find out how to configure and activate the WLAN Pi hotspot mode.
+
+**Background**: This package was created using the information in François Vergès blog article : [WLAN Pi - Setup a Wi-Fi Hotspot](https://www.semfionetworks.com/blog/wlan-pi-setup-a-wi-fi-hotspot)
+
 
 ## Requirements
 
-To provide a test hotspot using your WLANPi, you will need:
+To use hotspot mode on your WLANPi, you will need:
 
  - a supported wireless adapter plugged in to one USB port of the WLANPi (e.g. CF-912AC, CF-915AC)
- - WLANPi distribution v1.7 or later installed on a WLANPi (https://github.com/WLAN-Pi/wlanpi/releases), which includes [Bakebit](https://github.com/WLAN-Pi/BakeBit) v0.17 or later
+ - WLANPi distribution v1.7 or later installed on a WLANPi (https://github.com/WLAN-Pi/wlanpi/releases)
 
 ## Configurations Options
 
-It is very likely that you will not want to use this utility with the default shared key, channel and SSID. 
+It is very likely that you will not want to use this utility with the default shared key, channel and SSID. The defaults are:
 
-To change from the default settings, ensure that the WLANPi is operating in standard "classic"mode. Then, edit the file: /etc/wlanpihostpot/conf/hostapd.conf. This can be done by opening an SSH session to the WLANPi and using the 'nano' editor:
+* shared key: wifipros
+* ssid: wlanpi_hotspot
+* channel: 36
+
+To change from default settings, ensure that the WLANPi is operating in standard "classic"mode (i.e. it has not already been switched in to another node such as hotspot or wireless console mode). Then, edit the file: /etc/wlanpihostpot/conf/hostapd.conf. This can be done by opening an SSH session to the WLANPi and using the 'nano' editor:
 
 ```
  sudo nano /etc/wlanpihotspot/conf/hostapd.conf
@@ -44,15 +51,21 @@ There are numerous fields you can configure to change the behavior of the hotspo
 
 Once you have made your changes, hit Ctrl-X in the nano editor to exit and hit "Y" to save the changes when prompted.
 
-Next, flip the WLANPi back in to "Hotspot" mode as described in previous sections. After the accompanying reboot, the WLANPi should operate using the newly configured parameters.
+Next, flip the WLANPi in to "Hotspot" mode using the front panel controls of the WLAN Pi. The required front panel option is: "Menu > Modes > HotSpot > Confirm". This will trigger a reboot of the WPAN Pi to switch it into to hotpot mode.  After the accompanying reboot, the WLANPi should operate using the parameters configured in hostapd.conf.
+
+If you need to make any subsequent alterations to the parameters configured in hostapd.conf, after making your edits, reboot the WLAN Pi so that they take effect.
 
 # Using Hotspot Mode
 
-Following the WLANPi reboot, by default, an SSID of "wlanpi_hotspot" will be available on channel 36. You can join the SSID with a wireless client (e.g. your laptop) using the default shared key: "wifipros".
+Following the WLANPi reboot, your configured hotspot SSID should be available in the network list shown on your wireless client (e.g. laptop).
 
-Once you have joined the SSID, an IP address is assigned to your client device via DHCP and you will have access to the WLANPi. You will be able to access features such as the speedtest using a browser pointed at : http://192.168.88.1/
+Once you have joined the SSID, an IP address is assigned to your client device via DHCP and you will have access to the WLAN Pi itself (e.g. SSH to 192.168.88.1). You will be able to access features such as the built-in speedtest utility using a browser pointed at : http://192.168.88.1/
 
-# Background
+If the Ethernet port of the WLAN Pi is connected to a switch port that can provide an IP address to the WAN Pi, traffic can be forwarded (routed) from your wireless client and out to the Ethernet port. This can be useful to provide an extended network connection from an existing wired network.
+
+# Developer Information - (Regular Users Do Not Need This Information)
+
+## Mode Switching Background (Developer Info)
 
 (It is possible to flip in to Hotspot mode using the Linux CLI, but it is strongly recommended to use the native WLANPi front panel navigation menu)
 
@@ -64,7 +77,7 @@ When moving back to the original "classic" mode, all changed files are restored 
 
 When moving between modes, the WLANPi will reboot to ensure that all new network configuration starts cleanly. 
 
-## Enabling Hotspot Mode (Via CLI)
+### Enabling Hotspot Mode (Via CLI)
 
 To flip the WLANPi in to "Hotspot" mode, SSH to the WLANPi and execute the following command:
 
@@ -75,7 +88,7 @@ To flip the WLANPi in to "Hotspot" mode, SSH to the WLANPi and execute the follo
 At this point, the WLANPi will reboot so that the new networking configuration will take effect. 
 
 
-## Exiting Hotspot Mode (via CLI)
+### Exiting Hotspot Mode (via CLI)
 
 To switch out of "Hotspot" mode, SSH to the WLANPi using network address 192.168.88.1 and run the command: 
 
