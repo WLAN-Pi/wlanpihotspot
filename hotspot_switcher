@@ -35,7 +35,9 @@ fi
 ###############################################################################
 hotspot_on () {
 
-    # check if the WLAN NIC supports AP mode before switching
+  echo "Starting switch from classic mode to hostpot mode"
+
+  # check if the WLAN NIC supports AP mode before switching
   # iw list | awk '/Supported interface modes/, /Band/' | grep '\* AP'
    AP_SUPPORT=`iw list | awk '/Supported interface modes/, /Band/' | grep '\* AP'` || true
    if  [ -z "$AP_SUPPORT" ]; then
@@ -45,6 +47,7 @@ hotspot_on () {
   
   echo "Enabling hotspot..."
   #Backup existing config files
+  echo "Backing up existing config files..."
   cp /etc/default/isc-dhcp-server /etc/default/isc-dhcp-server.hspt
   cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.hspt
   cp /etc/network/interfaces /etc/network/interfaces.hspt
@@ -56,6 +59,7 @@ hotspot_on () {
     cp /etc/hostapd.conf /etc/hostapd.conf.hspt
   fi
   # Remove existing config files
+  echo "Removing existing config files..."
   rm /etc/default/isc-dhcp-server
   rm /etc/dhcp/dhcpd.conf
   rm /etc/network/interfaces
@@ -67,6 +71,7 @@ hotspot_on () {
     rm /etc/hostapd.conf
   fi
   # Link to hotspot config files
+  echo "Creaing links to config files..."
   ln -s /etc/wlanpihotspot/default/isc-dhcp-server /etc/default/isc-dhcp-server 
   ln -s /etc/wlanpihotspot/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf
   ln -s /etc/wlanpihotspot/network/interfaces /etc/network/interfaces
@@ -74,10 +79,43 @@ hotspot_on () {
   ln -s /etc/wlanpihotspot/sysctl/sysctl.conf /etc/sysctl.conf
   ln -s /etc/wlanpihotspot/default/ufw /etc/default/ufw
   ln -s /etc/wlanpihotspot/ufw/before.rules /etc/ufw/before.rules
+
+  echo "Restarting required services..."
+  
+  # Restart dhcpd
+  echo "Restarting isc-dhcp..."
+  systemctl restart isc-dhcp-server.service
+
+  # Restart hostapd
+  echo "Restarting hostapd..."
+  systemctl restart hostapd.service
+
+  # Restart ufw services
+  echo "Restarting ufw..."
+  
+  # Restart sysctl services
+  echo "Re-reading sysctl.conf..."
+  sysctl --system
+
+  #echo "Performing daemon-reload..."
+  #systemctl daemon-reload
+
+  # Restart network interfaces
+  #echo "Bouncing interface wlan0..."
+  #ip link set wlan0 down
+  #ip link set wlan0 up
+  #ifdown wlan0
+  ifup wlan0
+
+  #echo "Bouncing interface eth0..."
+  ip link set eth0 down
+  ip link set eth0 up
+ 
   touch $STATUS_FILE
-  echo "WLANPi will now reboot"
-  sleep 1
-  reboot
+  sync
+
+  echo "Process restarts complete. Mode change (on) completed"
+  #systemctl restart networking
 }
 
 ###############################################################################
@@ -92,8 +130,10 @@ hotspot_on () {
 #
 ###############################################################################
 hotspot_off () {
-  echo "Disabling hotspot..."
+  echo "Starting switch from hotspot mode to classic mode"
+
   # Remove links to config files
+  echo "Removing links to config files..."
   unlink /etc/default/isc-dhcp-server
   unlink /etc/dhcp/dhcpd.conf
   unlink /etc/network/interfaces
@@ -101,7 +141,9 @@ hotspot_off () {
   unlink /etc/sysctl.conf
   unlink /etc/default/ufw
   unlink /etc/ufw/before.rules
+
   # Restore original config files
+  echo "Restoring original config files..."
   cp /etc/default/isc-dhcp-server.hspt /etc/default/isc-dhcp-server
   cp /etc/dhcp/dhcpd.conf.hspt /etc/dhcp/dhcpd.conf
   cp /etc/network/interfaces.hspt /etc/network/interfaces
@@ -112,12 +154,50 @@ hotspot_off () {
   if [ -e /etc/hostapd.conf.hspt ]; then
     cp /etc/hostapd.conf.hspt /etc/hostapd.conf
   fi
-  echo "WLANPi will now reboot"
+
+  echo "Restarting required services..."
+  
+  # Restart dhcpd
+  echo "Restarting isc-dhcp..."
+  systemctl restart isc-dhcp-server.service
+
+  # Restart hostapd
+  echo "Restarting hostapd..."
+  systemctl restart hostapd.service
+
+  # Restart ufw services
+  echo "Restarting ufw..."
+  systemctl restart ufw.service
+
+  # Restart network interfaces
+  echo "Bouncing interface wlan0..."
+  #ip link set wlan0 down
+  #ip link set wlan0 up
+  ifdown wlan0
+  #ifup wlan0
+
+  echo "Bouncing interface eth0..."
+  ip link set eth0 down
+  ip link set eth0 up
+
+  # Restart sysctl services
+  echo "Re-reading sysctl.conf..."
+  sysctl --system
+
+  echo "Performing daemon-reload..."
+  systemctl daemon-reload
+
+  # Remove mode file
+  echo "Removing mode file..."
   if [ -e "$STATUS_FILE" ]; then
     rm $STATUS_FILE
   fi
-  sleep 1
-  reboot
+ 
+  sync
+  echo "Process restarts complete. Mode change (off) completed"
+
+  #systemctl restart networking
+  
 }
 
 status () {

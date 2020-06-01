@@ -14,7 +14,7 @@ dns-nameservers 8.8.8.8 8.8.4.4
 #   wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
 # Disable power saving on compatible chipsets (prevents SSH/connection dropouts over WiFi)
 #wireless-mode Monitor
-wireless-power off
+#wireless-power off
 hostapd /etc/hostapd.conf
 
 # USB virtual ethernet interface
