@@ -8,13 +8,16 @@
 #
 # v0.01 - 25th July 2019 - Initial version based on Francois Verges' article
 # v0.02 - 26th July 2019 - Added file checks before file copy/del operations
-
+# v0.03 - 2nd Nov 2019 - Added bridging of interfaces
+# v0.04 - 23rd Dec 2019 - Improved docs & added wlan adapter check
+# v0.05 - 28th Jan 2020 - Added check for NICs that do not support AP mode
+# v0.06 - 12th Jun 2020 - Added suport for new status file location
 set -e
 
 NAME=hotspot_switcher
 DESC="Script to switch hotspot on/off"
-VERSION=0.03
-STATUS_FILE="/etc/wlanpihotspot/hotspot.on"
+VERSION=0.06
+STATUS_FILE="/etc/wlanpi-state"
 
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 
@@ -36,6 +39,13 @@ fi
 hotspot_on () {
 
   echo "Starting switch from classic mode to hostpot mode"
+
+  # check what state the WLAN Pi is in
+  PI_STATUS=`cat $STATUS_FILE | grep 'classic'` || true
+  if  [ -z "$PI_STATUS" ]; then
+     echo "Failed - WLAN Pi is not in classic mode."
+     exit 1
+  fi
 
   # check if the WLAN NIC supports AP mode before switching
   # iw list | awk '/Supported interface modes/, /Band/' | grep '\* AP'
@@ -80,42 +90,14 @@ hotspot_on () {
   ln -s /etc/wlanpihotspot/default/ufw /etc/default/ufw
   ln -s /etc/wlanpihotspot/ufw/before.rules /etc/ufw/before.rules
 
-  echo "Restarting required services..."
-  
-  # Restart dhcpd
-  echo "Restarting isc-dhcp..."
-  systemctl restart isc-dhcp-server.service
-
-  # Restart hostapd
-  echo "Restarting hostapd..."
-  systemctl restart hostapd.service
-
-  # Restart ufw services
-  echo "Restarting ufw..."
-  
-  # Restart sysctl services
-  echo "Re-reading sysctl.conf..."
-  sysctl --system
-
-  #echo "Performing daemon-reload..."
-  #systemctl daemon-reload
-
-  # Restart network interfaces
-  #echo "Bouncing interface wlan0..."
-  #ip link set wlan0 down
-  #ip link set wlan0 up
-  #ifdown wlan0
-  ifup wlan0
-
-  #echo "Bouncing interface eth0..."
-  ip link set eth0 down
-  ip link set eth0 up
- 
-  touch $STATUS_FILE
+  # Signal that wconsole active
+  echo "hotspot" > $STATUS_FILE
+  echo "WLANPi will now reboot"
+  sleep 1
   sync
+  reboot
 
-  echo "Process restarts complete. Mode change (on) completed"
-  #systemctl restart networking
+  
 }
 
 ###############################################################################
@@ -130,6 +112,14 @@ hotspot_on () {
 #
 ###############################################################################
 hotspot_off () {
+
+  # check what state the WLAN Pi is in
+  PI_STATUS=`cat $STATUS_FILE | grep 'hotspot'` || true
+  if  [ -z "$PI_STATUS" ]; then
+     echo "Failed - WLAN Pi is not in wconsole mode."
+     exit 1
+  fi
+
   echo "Starting switch from hotspot mode to classic mode"
 
   # Remove links to config files
@@ -155,57 +145,20 @@ hotspot_off () {
     cp /etc/hostapd.conf.hspt /etc/hostapd.conf
   fi
 
-  echo "Restarting required services..."
-  
-  # Restart dhcpd
-  echo "Restarting isc-dhcp..."
-  systemctl restart isc-dhcp-server.service
-
-  # Restart hostapd
-  echo "Restarting hostapd..."
-  systemctl restart hostapd.service
-
-  # Restart ufw services
-  echo "Restarting ufw..."
-  systemctl restart ufw.service
-
-  # Restart network interfaces
-  echo "Bouncing interface wlan0..."
-  #ip link set wlan0 down
-  #ip link set wlan0 up
-  ifdown wlan0
-  #ifup wlan0
-
-  echo "Bouncing interface eth0..."
-  ip link set eth0 down
-  ip link set eth0 up
-
-  # Restart sysctl services
-  echo "Re-reading sysctl.conf..."
-  sysctl --system
-
-  echo "Performing daemon-reload..."
-  systemctl daemon-reload
-
-  # Remove mode file
-  echo "Removing mode file..."
-  if [ -e "$STATUS_FILE" ]; then
-    rm $STATUS_FILE
-  fi
- 
+  echo "WLANPi will now reboot"
+  echo "classic" > $STATUS_FILE
+  sleep 1
   sync
-  echo "Process restarts complete. Mode change (off) completed"
-
-  #systemctl restart networking
-  
+  reboot
 }
 
 status () {
-  if [ -e "$STATUS_FILE" ]; then
-    echo "hotspot is currently enabled"
+  PI_STATUS=`cat $STATUS_FILE | grep 'hotspot'` || true
+  if  [ -z "$PI_STATUS" ]; then
+    echo "hotspot is currently disabled"
     exit 0
   else
-    echo "hotspot is currently disabled"
+    echo "hotpot is currently enabled"
     exit 0
   fi
 
