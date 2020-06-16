@@ -40,7 +40,7 @@ hotspot_on () {
 
   echo "Starting switch from classic mode to hostpot mode"
 
-  # check what state the WLAN Pi is in
+  # check what state the WLAN Pi is in classic mode
   PI_STATUS=`cat $STATUS_FILE | grep 'classic'` || true
   if  [ -z "$PI_STATUS" ]; then
      echo "Failed - WLAN Pi is not in classic mode."
