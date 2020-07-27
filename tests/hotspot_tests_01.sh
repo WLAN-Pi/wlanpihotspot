@@ -9,7 +9,7 @@
 # User configurable vars
 ##########################
 MODULE=hotspot
-VERSION=1.0
+VERSION=1.01
 COMMENTS="hotspot test suite to verify files & processes"
 SCRIPT_NAME=$(basename $0)
 
@@ -82,10 +82,10 @@ Test rig description:
   1. WLAN Pi running image to be tested
   2. Supported wireless NIC card on one of USB ports
   3. WLAN Pi is switched in to hotspot mode
-  4. wconsole config files are default
+  4. hotspot config files are default
   5. Run tests by joining SSID 'wlanpi_hotspot' (key = 'wifipros' ) 
   6. SSH to 192.168.88.1 and run this test script:
-      /etc/wlanpihotspot/tests/hotspot_tests.01.sh
+      /etc/wlanpihotspot/tests/hotspot_tests_01.sh
 
 =======================================================" | tee $LOG_FILE
 
